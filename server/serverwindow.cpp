@@ -161,12 +161,14 @@ void ServerWindow::showHistory(QTcpSocket *user)
     QTextStream in(&file);
     QString line = in.readLine();
     QString history("");
+    history.append("<i><span style=color:#f26247;>");
     while (!line.isNull())
     {
         cout << "READING FILE, line = " << line.toStdString() << endl;
         history.append(line + "<br/>");
         line = in.readLine();
     }
+    history.append("</span></i>");
     QByteArray paquet = createPaquet(history);
     user->write(paquet);
 }
