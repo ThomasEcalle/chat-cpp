@@ -98,12 +98,46 @@ void ServerWindow::newConnection()
        connect(newClient, SIGNAL(disconnected()), this, SLOT(deconnexion()));
 }
 
+/*
+ * ici on prévient tout le monde de la déconnexion,
+ *  puis on retire le client de la liste
+ */
 void ServerWindow::deconnexion()
 {
+    sendAll(tr("<em>Un client vient de se déconnecter</em>"));
 
+
+    QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
+    if (socket == 0)
+        return;
+
+    clients.removeOne(socket);
+
+    socket->deleteLater();
 }
 
+/*
+ *Ici, nous commençons par créer un Paquet, puis un Stream d'écriture sur celui-ci ('out')
+ * NOus écrirons la taille du paquet plus tard, on commence donc par mettre une valeur par défault (0) de la taille
+ * d'un quint16 afin de réserver cet espace mémoire du paquet
+ * Ensuite, nous écrivons le message
+ * Puis nous revenons au début du paquet et écrivons la taille de celui-ci
+ *
+ * Enfin, on écrit le paquet dans toutes les socket (les clients)
+ *
+ */
 void ServerWindow::sendAll(const QString &message)
 {
+    QByteArray paquet;
+    QDataStream out(&paquet, QIODevice::WriteOnly);
 
+    out << (quint16) 0;
+    out << message;
+    out.device()->seek(0);
+    out << (quint16) (paquet.size() - sizeof(quint16));
+
+    for (int i = 0; i < clients.size(); i++)
+    {
+        clients[i]->write(paquet);
+    }
 }
