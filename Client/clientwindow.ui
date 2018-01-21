@@ -28,7 +28,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="serveurIP">
+      <widget class="QLineEdit" name="serverIP">
        <property name="maximumSize">
         <size>
          <width>150</width>
@@ -48,7 +48,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="serveurPort">
+      <widget class="QSpinBox" name="serverPort">
        <property name="minimumSize">
         <size>
          <width>60</width>
@@ -117,7 +117,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QTextEdit" name="listeMessages">
+    <widget class="QTextEdit" name="messagesList">
      <property name="readOnly">
       <bool>true</bool>
      </property>
