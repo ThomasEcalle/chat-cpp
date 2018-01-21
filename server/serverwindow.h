@@ -3,6 +3,9 @@
 
 #include <QtWidgets>
 #include <QtNetwork>
+#include <iostream>
+using namespace std;
+
 
 
 class ServerWindow : public QWidget
@@ -12,13 +15,17 @@ class ServerWindow : public QWidget
     public:
         ServerWindow();
         void sendAll(const QString &message);
+        void showHistory(QTcpSocket *user);
+        void saveInHistory(const QString &message);
 
     private slots:
         void newConnection();
         void dataReceived();
         void deconnexion();
 
+
     private:
+        QByteArray createPaquet(const QString &message);
         QLabel *serverState;
         QPushButton *quitButton;
 

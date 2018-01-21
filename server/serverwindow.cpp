@@ -84,6 +84,7 @@ void ServerWindow::dataReceived()
 
 
     sendAll(message);
+    saveInHistory(message);
 
     messageSize = 0;
 }
@@ -96,18 +97,19 @@ void ServerWindow::newConnection()
        QTcpSocket *newClient = server->nextPendingConnection();
        clients << newClient;
 
+       showHistory(newClient);
+
        connect(newClient, SIGNAL(readyRead()), this, SLOT(dataReceived()));
        connect(newClient, SIGNAL(disconnected()), this, SLOT(deconnexion()));
 }
 
 /*
- * ici on prévient tout le monde de la déconnexion,
+ *  ici on prévient tout le monde de la déconnexion,
  *  puis on retire le client de la liste
  */
 void ServerWindow::deconnexion()
 {
     sendAll(tr("<em>Un client vient de se déconnecter</em>"));
-
 
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
     if (socket == 0)
@@ -118,17 +120,69 @@ void ServerWindow::deconnexion()
     socket->deleteLater();
 }
 
+
 /*
- *Ici, nous commençons par créer un Paquet, puis un Stream d'écriture sur celui-ci ('out')
+ * On ouvre le fichier History en mode append et on y insère le message
+ */
+void ServerWindow::saveInHistory(const QString &message)
+{
+    QFile file( "history.txt" );
+    if ( file.open(QIODevice::WriteOnly| QIODevice::Append) )
+    {
+        QTextStream stream( &file );
+        stream << message << endl;
+    }
+}
+
+
+/*
+ * On crée un paquet
+ * Puis, on écrit le paquet dans toutes les socket (les clients)
+ */
+void ServerWindow::sendAll(const QString &message)
+{
+    QByteArray paquet = createPaquet(message);
+
+    for (int i = 0; i < clients.size(); i++)
+    {
+        clients[i]->write(paquet);
+    }
+}
+
+/*
+ * On montre l'historique de la conversation à l'utilisateur
+ */
+void ServerWindow::showHistory(QTcpSocket *user)
+{
+    QFile file("history.txt");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QTextStream in(&file);
+    QString line = in.readLine();
+    QString history("");
+    while (!line.isNull())
+    {
+        cout << "READING FILE, line = " << line.toStdString() << endl;
+        history.append(line + "<br/>");
+        line = in.readLine();
+    }
+    QByteArray paquet = createPaquet(history);
+    user->write(paquet);
+}
+
+
+
+
+/*
+ *
+ * Ici, nous commençons par créer un Paquet, puis un Stream d'écriture sur celui-ci ('out')
  * NOus écrirons la taille du paquet plus tard, on commence donc par mettre une valeur par défault (0) de la taille
  * d'un quint16 afin de réserver cet espace mémoire du paquet
  * Ensuite, nous écrivons le message
  * Puis nous revenons au début du paquet et écrivons la taille de celui-ci
- *
- * Enfin, on écrit le paquet dans toutes les socket (les clients)
- *
  */
-void ServerWindow::sendAll(const QString &message)
+QByteArray ServerWindow::createPaquet(const QString &message)
 {
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
@@ -138,8 +192,5 @@ void ServerWindow::sendAll(const QString &message)
     out.device()->seek(0);
     out << (quint16) (paquet.size() - sizeof(quint16));
 
-    for (int i = 0; i < clients.size(); i++)
-    {
-        clients[i]->write(paquet);
-    }
+    return paquet;
 }
