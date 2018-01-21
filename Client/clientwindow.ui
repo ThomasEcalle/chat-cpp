@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>FenClient</class>
- <widget class="QWidget" name="FenClient">
+ <class>ClientWindow</class>
+ <widget class="QWidget" name="ClientWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -67,7 +67,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="connect">
+      <widget class="QPushButton" name="connectButton">
        <property name="text">
         <string>Connexion</string>
        </property>
@@ -105,7 +105,7 @@
           </font>
          </property>
          <property name="text">
-          <string>ZeroChat</string>
+          <string>Chat</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>

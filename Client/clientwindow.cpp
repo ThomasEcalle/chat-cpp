@@ -11,10 +11,10 @@ ClientWindow::ClientWindow()
     setupUi(this);
 
     serverSocket = new QTcpSocket(this);
-    connect(serverSocket, SIGNAL(readyRead()), this, SLOT(dateReceived()));
-    connect(serverSocket, SIGNAL(connected()), this, SLOT(connect()));
-    connect(serverSocket, SIGNAL(disconnected()), this, SLOT(deconnexion()));
-    connect(serverSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)));
+    QObject::connect(serverSocket, &QTcpSocket::readyRead, this, &ClientWindow::dataReceived);
+    QObject::connect(serverSocket, &QTcpSocket::connected, this, &ClientWindow::connect);
+    QObject::connect(serverSocket, &QTcpSocket::disconnected, this, &ClientWindow::deconnexion);
+    QObject::connect (serverSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this, &ClientWindow::socketError);
 
     messageSize = 0;
 }
@@ -25,11 +25,11 @@ ClientWindow::ClientWindow()
  * On annule toute pecédente tentative de connexion, puis on
  * se connecte à l'IP et au port choisis
  */
-void ClientWindow::on_connnect_clicked()
+void ClientWindow::on_connect_clicked()
 {
     // On annonce sur la fenêtre qu'on est en train de se connecter
     messagesList->append(tr("<em>Tentative de connexion en cours...</em>"));
-    connect->setEnabled(false);
+    connectButton->setEnabled(false);
 
     serverSocket->abort(); // On désactive les connexions précédentes s'il y en a
     serverSocket->connectToHost(serverIP->text(), serverPort->value()); // On se connecte au serveur demandé
@@ -116,7 +116,7 @@ void ClientWindow::dataReceived()
 void ClientWindow::connect()
 {
     messagesList->append(tr("<em>Connexion réussie !</em>"));
-    connect->setEnabled(true);
+    connectButton->setEnabled(true);
 }
 
 /*
@@ -146,10 +146,10 @@ void ClientWindow::socketError(QAbstractSocket::SocketError error)
             messagesList->append(tr("<em>ERREUR : le serveur a coupé la connexion.</em>"));
             break;
         default:
-            messagesList->append(tr("<em>ERREUR : ") + socket->errorString() + tr("</em>"));
+            messagesList->append(tr("<em>ERREUR : ") + serverSocket->errorString() + tr("</em>"));
     }
 
-    connect->setEnabled(true);
+    connectButton->setEnabled(true);
 }
 
 

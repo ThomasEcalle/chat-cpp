@@ -1,5 +1,5 @@
-#ifndef HEADER_FENSERVEUR
-#define HEADER_FENSERVEUR
+#ifndef HEADER_SERVERWINDOW
+#define HEADER_SERVERWINDOW
 
 #include <QtWidgets>
 #include <QtNetwork>

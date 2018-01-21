@@ -1,5 +1,5 @@
-#ifndef HEADER_FENCLIENT
-#define HEADER_FENCLIENT
+#ifndef HEADER_CLIENTWINDOW
+#define HEADER_CLIENTWINDOW
 
 #include <QtWidgets>
 #include <QtNetwork>

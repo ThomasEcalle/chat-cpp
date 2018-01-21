@@ -15,6 +15,8 @@ ServerWindow::ServerWindow()
     quitButton = new QPushButton(tr("Quitter"));
     connect(quitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
 
+    resize(350, 100);
+
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(serverState);
     layout->addWidget(quitButton);
