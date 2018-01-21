@@ -1,6 +1,5 @@
 TEMPLATE = app
 QT += widgets network
-TARGET =
 DEPENDPATH += .
 INCLUDEPATH += .
 

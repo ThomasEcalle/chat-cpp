@@ -25,14 +25,14 @@ ClientWindow::ClientWindow()
  * On annule toute pecédente tentative de connexion, puis on
  * se connecte à l'IP et au port choisis
  */
-void ClientWindow::on_connect_clicked()
+void ClientWindow::on_connectButton_clicked()
 {
     // On annonce sur la fenêtre qu'on est en train de se connecter
     messagesList->append(tr("<em>Tentative de connexion en cours...</em>"));
     connectButton->setEnabled(false);
 
-    serverSocket->abort(); // On désactive les connexions précédentes s'il y en a
-    serverSocket->connectToHost(serverIP->text(), serverPort->value()); // On se connecte au serveur demandé
+    serverSocket->abort();
+    serverSocket->connectToHost(serverIP->text(), serverPort->value());
 }
 
 

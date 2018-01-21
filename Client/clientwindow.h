@@ -19,7 +19,7 @@ class ClientWindow : public QWidget, private Ui::ClientWindow
         ClientWindow();
 
     private slots:
-        void on_connect_clicked();
+        void on_connectButton_clicked();
         void on_send_clicked();
         void on_message_returnPressed();
         void dataReceived();
