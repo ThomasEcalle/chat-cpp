@@ -10,6 +10,9 @@ ClientWindow::ClientWindow()
 {
     setupUi(this);
 
+    pseudo->setEnabled(false);
+    message->setEnabled(false);
+
     serverSocket = new QTcpSocket(this);
     QObject::connect(serverSocket, &QTcpSocket::readyRead, this, &ClientWindow::dataReceived);
     QObject::connect(serverSocket, &QTcpSocket::connected, this, &ClientWindow::connect);
@@ -48,6 +51,9 @@ void ClientWindow::on_connectButton_clicked()
  */
 void ClientWindow::on_send_clicked()
 {
+    if (pseudo->isEnabled()){
+        pseudo->setEnabled(false);
+    }
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
@@ -116,7 +122,9 @@ void ClientWindow::dataReceived()
 void ClientWindow::connect()
 {
     messagesList->append(tr("<em>Connexion réussie !</em>"));
-    connectButton->setEnabled(true);
+    connectButton->setEnabled(false);
+    pseudo->setEnabled(true);
+    message->setEnabled(true);
 }
 
 /*

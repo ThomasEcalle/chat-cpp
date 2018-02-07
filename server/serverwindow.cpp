@@ -53,8 +53,8 @@ ServerWindow::ServerWindow()
  * 3) Tant qu'on a pas reçu la taille du message (tant que c'est plus petit qu'un 'quint16'), alors on ne fait rien
  * 4) UNe fois la taille reçue, on la renseigne dans notre variable
  * 5) Maintenant qu'on sait la taille du message, on va faire la même technique pour celui-ci
- * En effet, tant que la taille des informations de la scoket est inférieure à la taille du message qu'on attend,
- * ça signifie qu'on a pas encore reçu le message en entier
+ *    En effet, tant que la taille des informations de la scoket est inférieure à la taille du message qu'on attend,
+ *    ça signifie qu'on a pas encore reçu le message en entier
  * 6) Une fois qu'on a le message en entier, on le met dans une QString (les strings de Qt) et on l'envoie à tous les clients
  * 7) on remet évidemment la taille du message à 0 pour les prochains messages
  *
@@ -161,7 +161,7 @@ void ServerWindow::showHistory(QTcpSocket *user)
     QTextStream in(&file);
     QString line = in.readLine();
     QString history("");
-    history.append("<i><span style=color:#f26247;>");
+    history.append("<i><span style=color:#f26247;>Chat history :<br />");
     while (!line.isNull())
     {
         cout << "READING FILE, line = " << line.toStdString() << endl;
