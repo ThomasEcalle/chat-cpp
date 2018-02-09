@@ -76,6 +76,7 @@ void ServerWindow::dataReceived()
     QDataStream in(socket);
 
     user->setSize(0);
+
     cout<< "plop 1, message size = " << user->getSize() << endl;
 
 
@@ -102,6 +103,7 @@ void ServerWindow::dataReceived()
     //user = serialized.value<User*>();
 
     cout << "roooooooooo" << endl;
+    //user->setSocket(socket);
 
     cout<< "plop 3 " << user->getPseudo().toStdString()  << endl;
 
@@ -132,8 +134,8 @@ void ServerWindow::newConnection()
 
        showHistory(user);
 
-       connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataReceived()));
-       connect(newSocket, SIGNAL(disconnected()), this, SLOT(deconnexion()));
+       connect(user->getSocket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
+       connect(user->getSocket(), SIGNAL(disconnected()), this, SLOT(deconnexion()));
 }
 
 /*
