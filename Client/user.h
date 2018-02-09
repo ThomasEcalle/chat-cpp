@@ -23,18 +23,20 @@ public:
     User(const User &other);
     ~User();
 
+
 private:
     QString pseudo;
     QString message;
     quint16 messageSize;
 
-    friend QDataStream & operator << (QDataStream &, const User &);
-    friend QDataStream & operator >> (QDataStream &, User &);
+
+    friend QDataStream & operator << (QDataStream &, const User *);
+    friend QDataStream & operator >> (QDataStream &, User *);
 
 };
 //Q_DECLARE_METATYPE(User*)
-QDataStream & operator << (QDataStream & out, const User & user);
-QDataStream & operator >> (QDataStream & in, User & user);
+QDataStream & operator << (QDataStream & out, const User * user);
+QDataStream & operator >> (QDataStream & in, User * user);
 
 
 

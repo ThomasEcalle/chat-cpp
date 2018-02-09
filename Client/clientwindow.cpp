@@ -10,16 +10,16 @@ ClientWindow::ClientWindow()
 {
     setupUi(this);
 
-    qRegisterMetaTypeStreamOperators<User>("User");
-    qMetaTypeId<User>();
+    qRegisterMetaTypeStreamOperators<User*>("User");
+    qMetaTypeId<User*>();
 
     pseudo->setEnabled(false);
     message->setEnabled(false);
 
     socket = new QTcpSocket(this);
 
-    user = User();
-    user.setSize(0);
+    user = new User();
+    user->setSize(0);
 
 
     QObject::connect(socket, &QTcpSocket::readyRead, this, &ClientWindow::dataReceived);
@@ -63,14 +63,16 @@ void ClientWindow::on_send_clicked()
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
     // On prépare le paquet à envoyer
-    user.setMessage(message->text());
+    user->setMessage(message->text());
 
     //QString messageToSend = tr("<strong>") + pseudo->text() +tr("</strong> : ") + message->text();
 
-    QVariant serializedUser; // = QVariant::fromValue(user);
-    serializedUser.setValue(user);
+    QVariant serializedUser = QVariant::fromValue<User*>(user);
+    cout<< "before : " << user->getMessage().toStdString() << endl;
 
-    cout<< "preparing message ton send : " << user.getMessage().toStdString() << endl;
+    User * test = serializedUser.value<User*>();
+
+    cout<< "message to send : " << test->getMessage().toStdString() << endl;
 
     cout << "serialized user correctly" << endl;
 
@@ -127,9 +129,9 @@ void ClientWindow::dataReceived()
     QVariant received;
     in >> received;
 
-    User user = received.value<User>();
+    User *user = received.value<User*>();
 
-    messagesList->append(user.getMessage());
+    messagesList->append(user->getMessage());
 
     messageSize = 0;
 

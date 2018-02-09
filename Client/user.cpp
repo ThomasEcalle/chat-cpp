@@ -2,16 +2,16 @@
 #include "user.h"
 using namespace std;
 
-QDataStream & operator << (QDataStream & out, const User & user)
+QDataStream & operator << (QDataStream & out, const User * user)
 {
-    cout << "client, out << message = " << user.getMessage().toStdString() << endl;
+    cout << "client, out << message = " << user->getMessage().toStdString() << endl;
 
-    out << user.getPseudo() << user.getMessage() << user.getSize();
+    out << user->getPseudo() << user->getMessage() << user->getSize();
 
     return out;
 }
 
-QDataStream & operator >> (QDataStream & in, User & user)
+QDataStream & operator >> (QDataStream & in, User * user)
 {
     QString pseud;
     QString mess;
@@ -19,7 +19,7 @@ QDataStream & operator >> (QDataStream & in, User & user)
     in >> pseud;
     in >> mess;
     in >> size;
-    user = User(pseud, mess, size);
+    user = new User(pseud, mess, size);
     return in;
 }
 
@@ -70,6 +70,7 @@ QString User::getMessage() const
 void User::setMessage(QString message)
 {
     this->message = message;
+    cout << "thomaas set message : " << this->getMessage().toStdString() << endl;
 }
 
 quint16 User::getSize() const

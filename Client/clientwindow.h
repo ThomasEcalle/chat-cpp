@@ -9,7 +9,7 @@
 #include <iostream>
 using namespace std;
 
-Q_DECLARE_METATYPE(User)
+Q_DECLARE_METATYPE(User*)
 
 
 /*
@@ -35,7 +35,7 @@ class ClientWindow : public QWidget, private Ui::ClientWindow
         void socketError(QAbstractSocket::SocketError error);
 
     private:
-        User user;
+        User *user;
         QTcpSocket * socket;
         quint16 messageSize;
 };
