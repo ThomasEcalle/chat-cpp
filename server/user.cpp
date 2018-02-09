@@ -4,54 +4,55 @@ using namespace std;
 
 QDataStream & operator << (QDataStream & out, const User * user)
 {
-    out << user->pseudo;
-    out << user->message;
-    out << user->messageSize;
+    cout << "client, out << message = " << user->getMessage().toStdString() << endl;
+
+    out << user->getPseudo() << user->getMessage();
 
     return out;
 }
 
-QDataStream & operator >> (QDataStream & in, User *user)
+QDataStream & operator >> (QDataStream & in, User * user)
 {
-    cout << "in operator << from User" << endl;
-
     QString pseud;
     QString mess;
-    quint16 size;
     in >> pseud;
     in >> mess;
-    in >> size;
 
-    cout << "in operator << from User message : " << mess.toStdString() << " pseudo :" << pseud.toStdString() << endl;
+    cout << ">> operator, mess :  " << mess.toStdString() << endl;
+    if (user == nullptr)
+    {
+        cout << "nuuuuuuuuuuuuul" << endl;
+    }
 
-    user = new User(pseud, mess, size);
+    user->pseudo = pseud;
+    user->message = mess;
+
+    cout << "babar" << user->getMessage().toStdString() << endl;
     return in;
 }
+
 
 User::User() : pseudo("Anonyme")
 {
 
 }
 
-User::User(QTcpSocket* socket) : pseudo("")
-{
-    this->socket = socket;
-}
-
 User::User(QString pseudo, QString message, quint16 size)
 {
-    cout << "constructor User" <<endl;
     this->pseudo = pseudo;
     this->message = message;
     this->messageSize = size;
-
-    cout << "constructor User, pseudo : " << this->pseudo.toStdString() <<endl;
-    cout << "constructor User, message : " << this->message.toStdString() <<endl;
 }
 
 User::User(const User &other)
 {
     this->pseudo = other.pseudo;
+}
+
+User::User(QTcpSocket* socket)
+{
+    this->setSocket(socket);
+    this->setSize(0);
 }
 
 User::~User()
@@ -61,7 +62,12 @@ User::~User()
 
 QTcpSocket* User::getSocket() const
 {
-    return socket;
+    return this->socket;
+}
+
+void User::setSocket(QTcpSocket* socket)
+{
+    this->socket = socket;
 }
 
 QString User::getPseudo() const
@@ -71,19 +77,18 @@ QString User::getPseudo() const
 
 void User::setPseudo(QString pseudo)
 {
-    cout << "in pseudo setter, value to set id : " << pseudo.toStdString() << endl;
     this->pseudo = pseudo;
-    cout << "baobaaaaab" << endl;
 }
 
 QString User::getMessage() const
 {
-    return message;
+    return this->message;
 }
 
 void User::setMessage(QString message)
 {
     this->message = message;
+    cout << "thomaas set message : " << this->getMessage().toStdString() << endl;
 }
 
 quint16 User::getSize() const

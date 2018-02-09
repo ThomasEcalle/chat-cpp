@@ -132,8 +132,8 @@ void ServerWindow::newConnection()
 
        showHistory(user);
 
-       connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataReceived()));
-       connect(newSocket, SIGNAL(disconnected()), this, SLOT(deconnexion()));
+       connect(user->getSocket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
+       connect(user->getSocket(), SIGNAL(disconnected()), this, SLOT(deconnexion()));
 }
 
 /*

@@ -112,6 +112,7 @@ void ClientWindow::on_message_returnPressed()
  */
 void ClientWindow::dataReceived()
 {
+
     QDataStream in(socket);
 
     if (messageSize == 0)
@@ -126,12 +127,12 @@ void ClientWindow::dataReceived()
         return;
 
 
-    QVariant received;
+    QString received;
     in >> received;
 
-    User *user = received.value<User*>();
+    cout << "on data received " <<  received.toStdString() <<endl;
 
-    messagesList->append(user->getMessage());
+    messagesList->append(received);
 
     messageSize = 0;
 

@@ -6,7 +6,7 @@ QDataStream & operator << (QDataStream & out, const User * user)
 {
     cout << "client, out << message = " << user->getMessage().toStdString() << endl;
 
-    out << user->getPseudo() << user->getMessage() << user->getSize();
+    out << user->getPseudo() << user->getMessage();
 
     return out;
 }
@@ -15,11 +15,10 @@ QDataStream & operator >> (QDataStream & in, User * user)
 {
     QString pseud;
     QString mess;
-    quint16 size;
     in >> pseud;
     in >> mess;
-    in >> size;
-    user = new User(pseud, mess, size);
+    user->setPseudo(pseud);
+    user->setMessage(mess);
     return in;
 }
 

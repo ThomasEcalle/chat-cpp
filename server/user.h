@@ -13,6 +13,7 @@ public:
     User(QTcpSocket* socket);
     User(QString pseudo, QString message, quint16 size);
     QTcpSocket* getSocket() const;
+    void setSocket(QTcpSocket* socket);
     QString getPseudo() const;
     void setPseudo(QString pseudo);
     QString getMessage() const;
