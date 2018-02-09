@@ -2,16 +2,16 @@
 #include "user.h"
 using namespace std;
 
-QDataStream & operator << (QDataStream & out, const User & user)
+QDataStream & operator << (QDataStream & out, const User * user)
 {
-    out << user.pseudo;
-    out << user.message;
-    out << user.messageSize;
+    out << user->pseudo;
+    out << user->message;
+    out << user->messageSize;
 
     return out;
 }
 
-QDataStream & operator >> (QDataStream & in, User & user)
+QDataStream & operator >> (QDataStream & in, User *user)
 {
     cout << "in operator << from User" << endl;
 
@@ -24,7 +24,7 @@ QDataStream & operator >> (QDataStream & in, User & user)
 
     cout << "in operator << from User message : " << mess.toStdString() << " pseudo :" << pseud.toStdString() << endl;
 
-    user = User(pseud, mess, size);
+    user = new User(pseud, mess, size);
     return in;
 }
 

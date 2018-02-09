@@ -8,7 +8,7 @@
 using namespace std;
 
 
-Q_DECLARE_METATYPE(User)
+Q_DECLARE_METATYPE(User*)
 
 class ServerWindow : public QWidget
 {

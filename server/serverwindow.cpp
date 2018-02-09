@@ -12,8 +12,8 @@
 ServerWindow::ServerWindow()
 {
 
-    qRegisterMetaTypeStreamOperators<User>("User");
-    qMetaTypeId<User>();
+    qRegisterMetaTypeStreamOperators<User*>("User");
+    qMetaTypeId<User*>();
 
 
 
@@ -90,23 +90,23 @@ void ServerWindow::dataReceived()
 
     if (socket->bytesAvailable() < user->getSize())
         return;
-    cout<< "plop 2, size ? " << socket->bytesAvailable() << endl;
 
+
+    cout<< "plop 2, size ? " << socket->bytesAvailable() << endl;
 
     QVariant serialized;
     //QVariant serialized = QVariant::fromValue(test);
-
     in >> serialized;
 
-    User test =  serialized.value<User>();
+    cout << "roooooooooo" << endl;
+    user =  serialized.value<User*>();
+    cout<< "plop 3 " << user->getPseudo().toStdString()  << endl;
 
-    cout<< "plop 3 "  << endl;
 
     //test = serialized.value<User>();
 
-    cout << "message received : " << test.getMessage().toStdString() << endl;
-    QString message = test.getMessage();
-
+    cout << "message received : " << user->getMessage().toStdString() << endl;
+    QString message = user->getMessage();
 
     sendAll(message);
     saveInHistory(message);
