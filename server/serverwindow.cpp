@@ -250,5 +250,5 @@ void ServerWindow::getUserBySocket(QTcpSocket* socket,User*  user)
 
     }
         user = new User(socket);
-        clients << user;
+        //clients << user;
 }

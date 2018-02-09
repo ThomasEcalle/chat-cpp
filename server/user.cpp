@@ -51,7 +51,7 @@ User::User(const User &other)
 
 User::User(QTcpSocket* socket)
 {
-    this->setSocket(socket);
+    this->socket = socket;
     this->setSize(0);
 }
 
