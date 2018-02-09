@@ -4,6 +4,13 @@
 #include <QtWidgets>
 #include <QtNetwork>
 #include "ui_ClientWindow.h"
+#include <QVariant>
+#include "user.h"
+#include <iostream>
+using namespace std;
+
+Q_DECLARE_METATYPE(User)
+
 
 /*
  * Notre fenêtre côté client possède un fichier UI généré par Qt Designer car plus "complexe" que celle du serveur
@@ -28,7 +35,8 @@ class ClientWindow : public QWidget, private Ui::ClientWindow
         void socketError(QAbstractSocket::SocketError error);
 
     private:
-        QTcpSocket *serverSocket;
+        User user;
+        QTcpSocket * socket;
         quint16 messageSize;
 };
 

@@ -4,9 +4,11 @@
 #include <QtWidgets>
 #include <QtNetwork>
 #include <iostream>
+#include "user.h"
 using namespace std;
 
 
+Q_DECLARE_METATYPE(User)
 
 class ServerWindow : public QWidget
 {
@@ -15,7 +17,7 @@ class ServerWindow : public QWidget
     public:
         ServerWindow();
         void sendAll(const QString &message);
-        void showHistory(QTcpSocket *user);
+        void showHistory(User *user);
         void saveInHistory(const QString &message);
 
     private slots:
@@ -26,12 +28,12 @@ class ServerWindow : public QWidget
 
     private:
         QByteArray createPaquet(const QString &message);
+        void getUserBySocket(QTcpSocket* socket,User*  user);
         QLabel *serverState;
         QPushButton *quitButton;
 
         QTcpServer *server;
-        QList<QTcpSocket *> clients;
-        quint16 messageSize;
+        QList<User *> clients;
 };
 
 #endif

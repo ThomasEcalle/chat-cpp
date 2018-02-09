@@ -10,16 +10,23 @@ ClientWindow::ClientWindow()
 {
     setupUi(this);
 
+    qRegisterMetaTypeStreamOperators<User>("User");
+    qMetaTypeId<User>();
+
     pseudo->setEnabled(false);
     message->setEnabled(false);
 
-    serverSocket = new QTcpSocket(this);
-    QObject::connect(serverSocket, &QTcpSocket::readyRead, this, &ClientWindow::dataReceived);
-    QObject::connect(serverSocket, &QTcpSocket::connected, this, &ClientWindow::connect);
-    QObject::connect(serverSocket, &QTcpSocket::disconnected, this, &ClientWindow::deconnexion);
-    QObject::connect (serverSocket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this, &ClientWindow::socketError);
+    socket = new QTcpSocket(this);
 
-    messageSize = 0;
+    user = User();
+    user.setSize(0);
+
+
+    QObject::connect(socket, &QTcpSocket::readyRead, this, &ClientWindow::dataReceived);
+    QObject::connect(socket, &QTcpSocket::connected, this, &ClientWindow::connect);
+    QObject::connect(socket, &QTcpSocket::disconnected, this, &ClientWindow::deconnexion);
+    QObject::connect(socket, static_cast<void (QTcpSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error), this, &ClientWindow::socketError);
+
 }
 
 /*
@@ -34,8 +41,8 @@ void ClientWindow::on_connectButton_clicked()
     messagesList->append(tr("<em>Tentative de connexion en cours...</em>"));
     connectButton->setEnabled(false);
 
-    serverSocket->abort();
-    serverSocket->connectToHost(serverIP->text(), serverPort->value());
+    socket->abort();
+    socket->connectToHost(serverIP->text(), serverPort->value());
 }
 
 
@@ -51,21 +58,32 @@ void ClientWindow::on_connectButton_clicked()
  */
 void ClientWindow::on_send_clicked()
 {
-    if (pseudo->isEnabled()){
-        pseudo->setEnabled(false);
-    }
+
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
+
+
     // On prépare le paquet à envoyer
-    QString messageToSend = tr("<strong>") + pseudo->text() +tr("</strong> : ") + message->text();
+    user.setMessage(message->text());
+    cout<< "preparing message ton send : " << user.getMessage().toStdString() << endl;
+    //QString messageToSend = tr("<strong>") + pseudo->text() +tr("</strong> : ") + message->text();
+
+    QVariant serializedUser;
+    serializedUser.setValue(user);
+
+    cout << "serialized user correctly" << endl;
 
     out << (quint16) 0;
-    out << messageToSend;
+    out << serializedUser;
     out.device()->seek(0);
     out << (quint16) (paquet.size() - sizeof(quint16));
 
-    serverSocket->write(paquet); // On envoie le paquet
+    cout << "before writting" << endl;
+
+    socket->write(paquet); // On envoie le paquet
+
+    cout << "we send packet" << endl;
 
     message->clear(); // On vide la zone d'écriture du message
     message->setFocus(); // Et on remet le curseur à l'intérieur
@@ -82,7 +100,7 @@ void ClientWindow::on_message_returnPressed()
 
 
 /*
- * Ici, on crée un Stream pour lire la coket du serveur
+ * Ici, on crée un Stream pour lire la socket du serveur
  * Tant qu'on a pas récupérer assez de paquets pour avoir la taille du message,
  * on ne fait rien
  * Une fois qu'on a la taille, on réitère le même principe tant qu'on a pas
@@ -92,27 +110,29 @@ void ClientWindow::on_message_returnPressed()
  */
 void ClientWindow::dataReceived()
 {
-    QDataStream in(serverSocket);
+    QDataStream in(socket);
 
     if (messageSize == 0)
     {
-        if (serverSocket->bytesAvailable() < (int)sizeof(quint16))
+        if (socket->bytesAvailable() < (int)sizeof(quint16))
              return;
 
         in >> messageSize;
     }
 
-    if (serverSocket->bytesAvailable() < messageSize)
+    if (socket->bytesAvailable() < messageSize)
         return;
 
 
-    QString receivedMessage;
-    in >> receivedMessage;
+    QVariant received;
+    in >> received;
 
-    messagesList->append(receivedMessage);
+    User user = received.value<User>();
 
+    messagesList->append(user.getMessage());
 
     messageSize = 0;
+
 }
 
 
@@ -154,11 +174,12 @@ void ClientWindow::socketError(QAbstractSocket::SocketError error)
             messagesList->append(tr("<em>ERREUR : le serveur a coupé la connexion.</em>"));
             break;
         default:
-            messagesList->append(tr("<em>ERREUR : ") + serverSocket->errorString() + tr("</em>"));
+            messagesList->append(tr("<em>ERREUR : ") + socket->errorString() + tr("</em>"));
     }
 
     connectButton->setEnabled(true);
 }
+
 
 
 

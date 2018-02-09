@@ -10,6 +10,7 @@ class User
 
 public:
     User();
+    User(QTcpSocket* socket);
     User(QString pseudo, QString message, quint16 size);
     QTcpSocket* getSocket() const;
     QString getPseudo() const;
@@ -19,13 +20,13 @@ public:
     quint16 getSize() const;
     void setSize(quint16 size);
 
-    static void initUserSystem ();
     User(const User &other);
     ~User();
 
 private:
     QString pseudo;
     QString message;
+    QTcpSocket* socket;
     quint16 messageSize;
 
     friend QDataStream & operator << (QDataStream &, const User &);

@@ -11,6 +11,12 @@
 */
 ServerWindow::ServerWindow()
 {
+
+    qRegisterMetaTypeStreamOperators<User>("User");
+    qMetaTypeId<User>();
+
+
+
     serverState = new QLabel;
     quitButton = new QPushButton(tr("Quitter"));
     connect(quitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
@@ -37,8 +43,6 @@ ServerWindow::ServerWindow()
         serverState->setText(tr("Le serveur a été démarré sur le port <strong>") + QString::number(server->serverPort()) + tr("</strong>.<br />Des clients peuvent maintenant se connecter."));
         connect(server, SIGNAL(newConnection()), this, SLOT(newConnection()));
     }
-
-    messageSize = 0;
 }
 
 
@@ -65,28 +69,46 @@ void ServerWindow::dataReceived()
     if (socket == 0)
         return;
 
+    User* user;
+    getUserBySocket(socket, user);
+
     QDataStream in(socket);
 
-    if (messageSize == 0)
+    cout<< "plop 1, message size = " << user->getSize() << endl;
+
+
+    if (user->getSize() == 0)
     {
         if (socket->bytesAvailable() < (int)sizeof(quint16))
              return;
 
-        in >> messageSize;
+        quint16 value;
+        in >> value;
+        user->setSize(value);
+        cout<< "final  size = " << user->getSize() << endl;
     }
 
-    if (socket->bytesAvailable() < messageSize)
+    if (socket->bytesAvailable() < user->getSize())
         return;
+    cout<< "plop 2, size ? " << socket->bytesAvailable() << endl;
 
 
-    QString message;
-    in >> message;
+    User test;
+    //QVariant serialized = QVariant::fromValue(test);
+    in >> test;
+
+    cout<< "plop 3" << endl;
+
+    //test = serialized.value<User>();
+
+    cout << "message received : " << test.getMessage().toStdString() << endl;
+    QString message = test.getMessage();
 
 
     sendAll(message);
     saveInHistory(message);
 
-    messageSize = 0;
+    user->setSize(0);
 }
 
 
@@ -94,13 +116,17 @@ void ServerWindow::newConnection()
 {
        sendAll(tr("<em>Un nouveau client vient de se connecter</em>"));
 
-       QTcpSocket *newClient = server->nextPendingConnection();
-       clients << newClient;
+       QTcpSocket *newSocket = server->nextPendingConnection();
+       User* user = new User(newSocket);
 
-       showHistory(newClient);
+       cout<< "new connection" << endl;
 
-       connect(newClient, SIGNAL(readyRead()), this, SLOT(dataReceived()));
-       connect(newClient, SIGNAL(disconnected()), this, SLOT(deconnexion()));
+       clients << user;
+
+       showHistory(user);
+
+       connect(user->getSocket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
+       connect(user->getSocket(), SIGNAL(disconnected()), this, SLOT(deconnexion()));
 }
 
 /*
@@ -114,8 +140,10 @@ void ServerWindow::deconnexion()
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
     if (socket == 0)
         return;
+    User* user;
+    getUserBySocket(socket,user);
 
-    clients.removeOne(socket);
+    clients.removeOne(user);
 
     socket->deleteLater();
 }
@@ -145,14 +173,14 @@ void ServerWindow::sendAll(const QString &message)
 
     for (int i = 0; i < clients.size(); i++)
     {
-        clients[i]->write(paquet);
+        clients[i]->getSocket()->write(paquet);
     }
 }
 
 /*
  * On montre l'historique de la conversation à l'utilisateur
  */
-void ServerWindow::showHistory(QTcpSocket *user)
+void ServerWindow::showHistory(User *user)
 {
     QFile file("history.txt");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -170,7 +198,7 @@ void ServerWindow::showHistory(QTcpSocket *user)
     }
     history.append("</span></i>");
     QByteArray paquet = createPaquet(history);
-    user->write(paquet);
+    user->getSocket()->write(paquet);
 }
 
 
@@ -195,4 +223,17 @@ QByteArray ServerWindow::createPaquet(const QString &message)
     out << (quint16) (paquet.size() - sizeof(quint16));
 
     return paquet;
+}
+
+void ServerWindow::getUserBySocket(QTcpSocket* socket,User*  user)
+{
+    for(int i=0; i< clients.length(); i++)
+    {
+        if(clients[i]->getSocket() == socket){
+            user = clients[i];
+            return;
+        }
+
+    }
+        user = new User(socket);
 }
