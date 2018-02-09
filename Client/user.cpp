@@ -1,10 +1,12 @@
+#include <iostream>
 #include "user.h"
+using namespace std;
 
 QDataStream & operator << (QDataStream & out, const User & user)
 {
-    out << user.pseudo;
-    out << user.message;
-    out << user.messageSize;
+    cout << "client, out << message = " << user.getMessage().toStdString() << endl;
+
+    out << user.getPseudo() << user.getMessage() << user.getSize();
 
     return out;
 }
@@ -62,7 +64,7 @@ void User::setPseudo(QString pseudo)
 
 QString User::getMessage() const
 {
-    return message;
+    return this->message;
 }
 
 void User::setMessage(QString message)

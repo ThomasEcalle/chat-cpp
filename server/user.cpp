@@ -22,9 +22,7 @@ QDataStream & operator >> (QDataStream & in, User & user)
     in >> mess;
     in >> size;
 
-    cout << pseud.toStdString();
-    cout << mess.toStdString();
-    cout << "in operator << from User message : " << endl;
+    cout << "in operator << from User message : " << mess.toStdString() << " pseudo :" << pseud.toStdString() << endl;
 
     user = User(pseud, mess, size);
     return in;
@@ -48,6 +46,7 @@ User::User(QString pseudo, QString message, quint16 size)
     this->messageSize = size;
 
     cout << "constructor User, pseudo : " << this->pseudo.toStdString() <<endl;
+    cout << "constructor User, message : " << this->message.toStdString() <<endl;
 }
 
 User::User(const User &other)

@@ -62,15 +62,15 @@ void ClientWindow::on_send_clicked()
     QByteArray paquet;
     QDataStream out(&paquet, QIODevice::WriteOnly);
 
-
-
     // On prépare le paquet à envoyer
     user.setMessage(message->text());
-    cout<< "preparing message ton send : " << user.getMessage().toStdString() << endl;
+
     //QString messageToSend = tr("<strong>") + pseudo->text() +tr("</strong> : ") + message->text();
 
-    QVariant serializedUser;
+    QVariant serializedUser; // = QVariant::fromValue(user);
     serializedUser.setValue(user);
+
+    cout<< "preparing message ton send : " << user.getMessage().toStdString() << endl;
 
     cout << "serialized user correctly" << endl;
 

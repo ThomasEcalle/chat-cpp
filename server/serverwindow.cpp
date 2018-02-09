@@ -93,11 +93,14 @@ void ServerWindow::dataReceived()
     cout<< "plop 2, size ? " << socket->bytesAvailable() << endl;
 
 
-    User test;
+    QVariant serialized;
     //QVariant serialized = QVariant::fromValue(test);
-    in >> test;
 
-    cout<< "plop 3" << endl;
+    in >> serialized;
+
+    User test =  serialized.value<User>();
+
+    cout<< "plop 3 "  << endl;
 
     //test = serialized.value<User>();
 
